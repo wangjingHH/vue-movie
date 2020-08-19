@@ -1,89 +1,20 @@
 <template>
   <div class="cinema_body">
     <ul>
-      <li>
+      <li v-for="item in cinemasList" :key="item.id">
         <div>
-          <span>大地影院(澳东世纪店)</span>
-          <span class="q"><span class="price">22.9</span> 元起</span>
+          <span>{{item.nm}}</span>
+          <span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
         </div>
         <div class="address">
-          <span>金州区大连经济技术开发区澳东世纪3层</span>
-          <span>1763.5km</span>
+          <span>{{item.addr}}</span>
+          <span>{{item.distance}}</span>
         </div>
         <div class="card">
-          <div>小吃</div>
-          <div>折扣卡</div>
+          <div v-for="(num,key) in item.tag"  v-if="num === 1" :key="key" :class="key | classCard">{{key | formatCard}}</div>
+          <div v-for="(value,key) in item.tag"  v-if="value === '折扣卡'" :key="key" >{{value}}</div>
+        
         </div>
-      </li>
-      <li>
-        <div>
-          <span>大地影院(澳东世纪店)</span>
-          <span class="q"><span class="price">22.9</span> 元起</span>
-        </div>
-        <div class="address">
-          <span>金州区大连经济技术开发区澳东世纪3层</span>
-          <span>1763.5km</span>
-        </div>
-        <div class="card">
-                  <div>小吃</div>
-                  <div>折扣卡</div>
-            </div>
-      </li>
-      <li>
-        <div>
-          <span>大地影院(澳东世纪店)</span>
-          <span class="q"><span class="price">22.9</span> 元起</span>
-        </div>
-        <div class="address">
-          <span>金州区大连经济技术开发区澳东世纪3层</span>
-          <span>1763.5km</span>
-        </div>
-        <div class="card">
-                  <div>小吃</div>
-                  <div>折扣卡</div>
-            </div>
-      </li>
-      <li>
-        <div>
-          <span>大地影院(澳东世纪店)</span>
-          <span class="q"><span class="price">22.9</span> 元起</span>
-        </div>
-        <div class="address">
-          <span>金州区大连经济技术开发区澳东世纪3层</span>
-          <span>1763.5km</span>
-        </div>
-        <div class="card">
-                  <div>小吃</div>
-                  <div>折扣卡</div>
-            </div>
-      </li>
-      <li>
-        <div>
-          <span>大地影院(澳东世纪店)</span>
-          <span class="q"><span class="price">22.9</span> 元起</span>
-        </div>
-        <div class="address">
-          <span>金州区大连经济技术开发区澳东世纪3层</span>
-          <span>1763.5km</span>
-        </div>
-        <div class="card">
-                  <div>小吃</div>
-                  <div>折扣卡</div>
-            </div>
-      </li>
-      <li>
-        <div>
-          <span>大地影院(澳东世纪店)</span>
-          <span class="q"><span class="price">22.9</span> 元起</span>
-        </div>
-        <div class="address">
-          <span>金州区大连经济技术开发区澳东世纪3层</span>
-          <span>1763.5km</span>
-        </div>
-        <div class="card">
-                  <div>小吃</div>
-                  <div>折扣卡</div>
-            </div>
       </li>
     </ul>
   </div>
@@ -91,7 +22,52 @@
 
 <script>
 export default {
-  name : 'WholeCity'
+  name : 'WholeCity',
+  data(){
+    return {
+      cinemasList : [],
+    }
+  },
+  mounted(){
+    this.axios.get("/cinemaList.json").then((res)=>{
+      var msg = res.data.msg;
+      if(msg){
+        this.cinemasList = res.data.data.cinemas;
+      }
+    })   
+  },
+  filters : {
+    formatCard(key){
+      var card = [
+        { key : "allowRefund" , value : "可退"},
+        { key : "buyout" , value : "包场"},
+        { key : "endorse" , value : "表彰"},
+        { key : "sell" , value : "购物"},
+        { key : "snack" , value : "小吃"},
+      ];
+      for(var i=0; i<card.length; i++){
+        if(card[i].key === key){
+          return card[i].value;
+        }
+      }
+      return '';
+    },
+    classCard(key){
+      var card = [
+        { key : "allowRefund" , value : "or"},
+        { key : "buyout" , value : "or"},
+        { key : "endorse" , value : "or"},
+        { key : "sell" , value : "bl"},
+        { key : "snack" , value : "bl"},
+      ];
+      for(var i=0; i<card.length; i++){
+        if(card[i].key === key){
+          return card[i].value;
+        }
+      }
+      return '';
+    }
+  }
 }
 </script>
 
