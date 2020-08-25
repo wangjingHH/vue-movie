@@ -1,22 +1,24 @@
 <template>
   <div class="cinema_body">
-    <ul>
-      <li v-for="item in cinemasList" :key="item.id">
-        <div>
-          <span>{{item.nm}}</span>
-          <span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
-        </div>
-        <div class="address">
-          <span>{{item.addr}}</span>
-          <span>{{item.distance}}</span>
-        </div>
-        <div class="card">
-          <div v-for="(num,key) in item.tag"  v-if="num === 1" :key="key" :class="key | classCard">{{key | formatCard}}</div>
-          <div v-for="(value,key) in item.tag"  v-if="value === '折扣卡'" :key="key" >{{value}}</div>
-        
-        </div>
-      </li>
-    </ul>
+    <Loading v-if="isLoading" />
+    <Scroller v-else>
+      <ul>
+        <li v-for="item in cinemasList" :key="item.id">
+          <div>
+            <span>{{item.nm}}</span>
+            <span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
+          </div>
+          <div class="address">
+            <span>{{item.addr}}</span>
+            <span>{{item.distance}}</span>
+          </div>
+          <div class="card">
+            <div v-for="(num,key) in item.tag"  v-if="num === 1" :key="key" :class="key | classCard">{{key | formatCard}}</div>
+            <div v-for="(value,key) in item.tag"  v-if="value === '折扣卡'" :key="key" >{{value}}</div> 
+          </div>
+        </li>
+      </ul>
+    </Scroller>
   </div>
 </template>
 
@@ -26,14 +28,19 @@ export default {
   data(){
     return {
       cinemasList : [],
+      isLoading : true,
+      prevCityId : -1
     }
   },
   mounted(){
-    this.axios.get("/cinemaList.json").then((res)=>{
-      var msg = res.data.msg;
-      if(msg){
-        this.cinemasList = res.data.data.cinemas;
-      }
+    var cityId = this.$store.state.city.id;
+    if(this.prevCityId === cityId){ return; }
+    this.isLoading = true;
+		console.log(cityId);
+    this.axios.get("/ajax/cinemaList?cityId="+cityId).then((res)=>{
+      this.cinemasList = res.data.cinemas;
+      this.isLoading = false,
+      this.prevCityId = cityId;
     })   
   },
   filters : {

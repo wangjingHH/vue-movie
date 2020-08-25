@@ -1,12 +1,17 @@
 <template>
   <div>
-    特色
+    <Loading v-if="isLoading" />
   </div>
 </template>
 
 <script>
 export default {
-  name : 'Feature'
+  name : 'Feature',
+  data(){
+    return {
+      isLoading :true
+    }
+  }
 }
 </script>
 

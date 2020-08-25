@@ -1,20 +1,24 @@
 <template>
   <div class="movie_body">
-				<ul>
-					<li v-for="item in comingList" :key="item.id">
-						<div class="pic_show"><img :src="item.img | setWH('128.180')"></div>
-						<div class="info_list">
-							<h2>{{item.nm}} <img v-if="item.version" src="@/assets/maxs.png" alt=""></h2>
-							<p><span class="person">{{item.wish}}</span> 人想看</p>
-							<p>主演: {{item.star}}</p>
-							<p>{{item.comingTitle}}上映</p>
-						</div>
-						<div class="btn_pre">
-							预售
-						</div>
-					</li>
-				</ul>
-			</div>
+		<Loading v-if="isLoading" />
+		<Scroller v-else :handleToScroll="handleToScroll" :handleToTouchEnd="handleToTouchEnd">
+			<ul>
+				<li class="pullDown">{{pullDownMsg}}</li>
+				<li v-for="item in comingList" :key="item.id">
+					<div class="pic_show"><img :src="item.img | setWH('128.180')"></div>
+					<div class="info_list">
+						<h2>{{item.nm}} <img v-if="item.version" src="@/assets/maxs.png" alt=""></h2>
+						<p><span class="person">{{item.wish}}</span> 人想看</p>
+						<p>主演: {{item.star}}</p>
+						<p>{{item.comingTitle}}上映</p>
+					</div>
+					<div class="btn_pre">
+						预售
+					</div>
+				</li>
+			</ul>
+		</Scroller>
+	</div>
 </template>
 
 <script>
@@ -23,15 +27,43 @@ export default {
 	data(){
 		return {
 			comingList : [],
+			pullDownMsg : '',
+			isLoading : true,
+			prevCityId : -1
 		}
 	},
-	mounted(){
-		this.axios.get("/comingList.json").then((res)=>{
-			var msg = res.data.msg;
-			if(msg === "ok"){
-				this.comingList = res.data.data.coming;
-			}
+	activated(){
+		var cityId = this.$store.state.city.id;
+    if(this.prevCityId === cityId){ return; }
+    this.isLoading = true;
+		console.log(cityId);
+		
+		this.axios.get("/ajax/comingList?token&cityId="+cityId).then((res)=>{
+			console.log(res.data);
+			this.comingList = res.data.coming;
+			this.isLoading = false;
+			this.prevCityId = cityId;
+			
 		})
+	},
+	methods : {
+		handleToScroll(pos){
+      if( pos.y > 30 ){
+        this.pullDownMsg = '正在更新中';
+      }
+    },
+    handleToTouchEnd(pos){
+      if( pos.y > 30 ){
+        this.axios.get("/ajax/comingList?token=").then((res)=>{
+					this.pullDownMsg = '更新成功';
+					setTimeout(()=>{
+						this.comingList = res.data.coming;
+						this.pullDownMsg = '';
+					},1000)
+          
+        })
+			}
+		}
 	}
 }
 </script>
@@ -49,4 +81,5 @@ export default {
 .movie_body .info_list img{ width:50px; position: absolute; right:10px; top: 5px;}
 .movie_body .btn_mall , .movie_body .btn_pre{ width:47px; height:27px; line-height: 28px; text-align: center; background-color: #f03d37; color: #fff; border-radius: 4px; font-size: 12px; cursor: pointer;}
 .movie_body .btn_pre{ background-color: #3c9fe6;}
+.movie_body .pullDown{ margin:0; padding:0; border:none;}
 </style>

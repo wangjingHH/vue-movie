@@ -1,12 +1,17 @@
 <template>
   <div>
-    品牌
+    <Loading v-if="isLoading" />
   </div>
 </template>
 
 <script>
 export default {
-  name : 'Brand'
+  name : 'Brand',
+  data() {
+    return {
+      isLoading :true
+    }
+  }
 }
 </script>
 
