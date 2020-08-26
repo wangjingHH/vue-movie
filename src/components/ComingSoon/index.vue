@@ -36,17 +36,17 @@ export default {
 		var cityId = this.$store.state.city.id;
     if(this.prevCityId === cityId){ return; }
     this.isLoading = true;
-		console.log(cityId);
 		
 		this.axios.get("/ajax/comingList?token&cityId="+cityId).then((res)=>{
-			console.log(res.data);
 			this.comingList = res.data.coming;
 			this.isLoading = false;
 			this.prevCityId = cityId;
-			
 		})
 	},
 	methods : {
+		handleToDetail(movieId){
+      this.$router.push('/movie/detail/2/' + movieId);
+    },
 		handleToScroll(pos){
       if( pos.y > 30 ){
         this.pullDownMsg = '正在更新中';

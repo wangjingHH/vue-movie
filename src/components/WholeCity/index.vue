@@ -36,7 +36,6 @@ export default {
     var cityId = this.$store.state.city.id;
     if(this.prevCityId === cityId){ return; }
     this.isLoading = true;
-		console.log(cityId);
     this.axios.get("/ajax/cinemaList?cityId="+cityId).then((res)=>{
       this.cinemasList = res.data.cinemas;
       this.isLoading = false,

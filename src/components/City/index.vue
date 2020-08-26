@@ -69,10 +69,8 @@ export default {
       var cityList = [];
       var hotList = [];
       cityList = cities;
-      
-      console.log(cities);
+    
       for(var key in cities){
-        //console.log(key);
         for(var i =0 ;i<cities[key].length;i++){
           if(cities[key][i].rank === "A"||cities[key][i].rank==="S"){
             hotList.push( cities[key][i])
